@@ -38,6 +38,7 @@ kserve:
       domainTemplate: "{{ .Name }}-{{ .Namespace }}.{{ .IngressDomain }}"
       urlScheme: http
       disableIstioVirtualHost: false
+      disableIngressCreation: false
       localGateway:
         gateway: knative-serving/knative-local-gateway
         gatewayService: knative-local-gateway.istio-system.svc.cluster.local
@@ -100,6 +101,9 @@ kserve:
       tag: *defaultVersion
     xgbserver:
       image: kserve/xgbserver
+      tag: *defaultVersion
+    huggingfaceserver:
+      image: kserve/huggingfaceserver
       tag: *defaultVersion
     tritonserver:
       image: nvcr.io/nvidia/tritonserver
