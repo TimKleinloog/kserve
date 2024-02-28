@@ -374,7 +374,6 @@ spec:
           cpu: "1"
           memory: 2Gi
 ---
----
 apiVersion: serving.kserve.io/v1alpha1
 kind: ClusterServingRuntime
 metadata:
