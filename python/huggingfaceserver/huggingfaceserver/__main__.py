@@ -28,7 +28,7 @@ def list_of_strings(arg):
 parser = argparse.ArgumentParser(parents=[kserve.model_server.parser])
 
 parser.add_argument('--model_dir', required=False, default=None,
-                    help='A URI pointer to the model binary')
+                    help='A local path to the model binary')
 parser.add_argument('--model_id', required=False,
                     help='Huggingface model id')
 parser.add_argument('--max_length', type=int, default=None,
@@ -67,11 +67,9 @@ if __name__ == "__main__":
                              kwargs=vars(args))
     try:
         model.load()
+        kserve.ModelServer().start([model] if model.ready else [])
     except ModelMissingError:
         logging.error(f"fail to locate model file for model {args.model_name} under dir {args.model_dir},"
                       f"trying loading from model repository.")
-    if not args.model_id:
         kserve.ModelServer(registered_models=HuggingfaceModelRepository(args.model_dir)).start(
             [model] if model.ready else [])
-    else:
-        kserve.ModelServer().start([model] if model.ready else [])

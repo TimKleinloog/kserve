@@ -21,23 +21,25 @@ import (
 	"fmt"
 
 	"github.com/go-logr/logr"
+	"github.com/pkg/errors"
+	v1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/client-go/kubernetes"
+	knservingv1 "knative.dev/serving/pkg/apis/serving/v1"
+	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
+
 	"github.com/kserve/kserve/pkg/constants"
 	"github.com/kserve/kserve/pkg/controller/v1beta1/inferenceservice/reconcilers/knative"
 	"github.com/kserve/kserve/pkg/controller/v1beta1/inferenceservice/reconcilers/raw"
 	isvcutils "github.com/kserve/kserve/pkg/controller/v1beta1/inferenceservice/utils"
 	"github.com/kserve/kserve/pkg/credentials"
 	"github.com/kserve/kserve/pkg/utils"
-	"github.com/pkg/errors"
-	v1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/types"
-	knservingv1 "knative.dev/serving/pkg/apis/serving/v1"
-	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
-
-	"github.com/kserve/kserve/pkg/apis/serving/v1alpha1"
+  
+  "github.com/kserve/kserve/pkg/apis/serving/v1alpha1"
 	"github.com/kserve/kserve/pkg/apis/serving/v1beta1"
 )
 
@@ -46,6 +48,7 @@ var _ Component = &Explainer{}
 // Explainer reconciles resources for this component.
 type Explainer struct {
 	client                 client.Client
+	clientset              kubernetes.Interface
 	scheme                 *runtime.Scheme
 	inferenceServiceConfig *v1beta1.InferenceServicesConfig
 	credentialBuilder      *credentials.CredentialBuilder //nolint: unused
@@ -53,10 +56,11 @@ type Explainer struct {
 	Log                    logr.Logger
 }
 
-func NewExplainer(client client.Client, scheme *runtime.Scheme, inferenceServiceConfig *v1beta1.InferenceServicesConfig,
-	deploymentMode constants.DeploymentModeType) Component {
+func NewExplainer(client client.Client, clientset kubernetes.Interface, scheme *runtime.Scheme,
+	inferenceServiceConfig *v1beta1.InferenceServicesConfig, deploymentMode constants.DeploymentModeType) Component {
 	return &Explainer{
 		client:                 client,
+		clientset:              clientset,
 		scheme:                 scheme,
 		inferenceServiceConfig: inferenceServiceConfig,
 		deploymentMode:         deploymentMode,

@@ -24,15 +24,14 @@ import (
 // ExplainerSpec defines the container spec for a model explanation server,
 // The following fields follow a "1-of" semantic. Users must specify exactly one spec.
 type ExplainerSpec struct {
-	// Spec for alibi explainer
 	// Spec for ART explainer
 	ART *ARTExplainerSpec `json:"art,omitempty"`
 	// Explainer spec for any arbitrary framework.
 	Model *ModelSpec `json:"model,omitempty"`
 	// This spec is dual purpose.
 	// 1) Users may choose to provide a full PodSpec for their custom explainer.
-	// The field PodSpec.Containers is mutually exclusive with other explainers (i.e. Alibi).
-	// 2) Users may choose to provide a Explainer (i.e. Alibi) and specify PodSpec
+	// The field PodSpec.Containers is mutually exclusive with other explainers.
+	// 2) Users may choose to provide a Explainer and specify PodSpec
 	// overrides in the PodSpec. They must not provide PodSpec.Containers in this case.
 	PodSpec `json:",inline"`
 	// Component extension defines the deployment configurations for explainer
