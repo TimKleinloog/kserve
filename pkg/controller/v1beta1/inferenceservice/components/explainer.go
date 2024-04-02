@@ -70,7 +70,7 @@ func (e *Explainer) Reconcile(isvc *v1beta1.InferenceService) (ctrl.Result, erro
 	var podSpec v1.PodSpec
 	var sRuntimeLabels map[string]string
 	var sRuntimeAnnotations map[string]string
-
+  
 	e.Log.Info("Reconciling Explainer", "ExplainerSpec", isvc.Spec.Explainer)
 	explainer := isvc.Spec.Explainer.GetImplementation()
 	annotations := utils.Filter(isvc.Annotations, func(key string) bool {
